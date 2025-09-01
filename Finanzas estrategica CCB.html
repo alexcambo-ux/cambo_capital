@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONSTRUCAMBO Finanzas</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for typography and printing */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Hide non-printable elements when printing */
+        @media print {
+            .tab-list, .tab-trigger, .non-printable {
+                display: none !important;
+            }
+            .printable-header, .printable-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Main application container -->
+    <div class="p-4 space-y-6 max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center p-4 non-printable">
+            <h1 class="text-3xl font-bold text-blue-800">CONSTRUCAMBO Finanzas</h1>
+            <p class="text-gray-600 mt-2">Prototipo de App de Gestión Financiera</p>
+        </header>
+        
+        <!-- Printable Header (for PDF export) -->
+        <div class="printable-header hidden text-center mb-6">
+            <h1 class="text-3xl font-bold text-blue-800 mb-2">Reporte Financiero CONSTRUCAMBO</h1>
+        </div>
+
+        <!-- Main content with tabs -->
+        <div class="w-full">
+            <!-- Tab navigation buttons -->
+            <div class="flex justify-center mb-6 overflow-x-auto tab-list">
+                <div id="tab-list" class="flex flex-nowrap space-x-2 p-1 bg-white rounded-xl shadow-sm">
+                    <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="login">Login</button>
+                    <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="dashboard">Dashboard</button>
+                    <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="ingreso">Ingreso</button>
+                    <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="gasto">Gasto</button>
+                    <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="historial">Historial</button>
+                    <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="reportes">Reportes</button>
+                    <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="ajustes">Ajustes</button>
+                </div>
+            </div>
+
+            <!-- Tab contents -->
+            <div id="tab-content-container">
+                <!-- 1. Login Screen -->
+                <div id="login" class="tab-content" data-tab="login">
+                    <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
+                        <div class="space-y-6 p-6">
+                            <h3 class="text-xl font-semibold text-center text-blue-700">Iniciar Sesión</h3>
+                            <input id="username" type="text" placeholder="Usuario" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                            <input id="password" type="password" placeholder="Contraseña" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                            <button id="login-button" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200">Ingresar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Dashboard Screen -->
+                <div id="dashboard" class="tab-content hidden" data-tab="dashboard">
+                    <div class="max-w-md mx-auto p-4 mb-4">
+                        <button id="export-dashboard-button" class="non-printable w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-200">Exportar Dashboard (PDF)</button>
+                    </div>
+                    <div class="printable-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Producción Card -->
+                            <div class="bg-blue-100 border-l-4 border-blue-600 shadow-lg rounded-xl p-4">
+                                <div class="p-0">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h3 class="font-semibold text-blue-700">Producción</h3>
+                                        <span id="badge-produccion" class="badge bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">OK</span>
+                                    </div>
+                                    <p id="balance-produccion" class="text-3xl font-bold text-blue-800">$2,000</p>
+                                    <div class="w-full bg-blue-300 rounded-full h-2 mt-4">
+                                        <div id="progress-produccion" class="bg-blue-600 h-2 rounded-full transition-all duration-500 ease-in-out" style="width: 40%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Gastos Fijos Card -->
+                            <div class="bg-orange-100 border-l-4 border-orange-600 shadow-lg rounded-xl p-4">
+                                <div class="p-0">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h3 class="font-semibold text-orange-700">Gastos Fijos</h3>
+                                        <span id="badge-gastosFijos" class="badge bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">OK</span>
+                                    </div>
+                                    <p id="balance-gastosFijos" class="text-3xl font-bold text-orange-800">$1,500</p>
+                                    <div class="w-full bg-orange-300 rounded-full h-2 mt-4">
+                                        <div id="progress-gastosFijos" class="bg-orange-600 h-2 rounded-full transition-all duration-500 ease-in-out" style="width: 30%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Reserva Card -->
+                            <div class="bg-green-100 border-l-4 border-green-600 shadow-lg rounded-xl p-4">
+                                <div class="p-0">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h3 class="font-semibold text-green-700">Reserva</h3>
+                                        <span id="badge-reserva" class="badge bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">OK</span>
+                                    </div>
+                                    <p id="balance-reserva" class="text-3xl font-bold text-green-800">$1,000</p>
+                                    <div class="w-full bg-green-300 rounded-full h-2 mt-4">
+                                        <div id="progress-reserva" class="bg-green-600 h-2 rounded-full transition-all duration-500 ease-in-out" style="width: 20%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Emergencias Card -->
+                            <div class="bg-red-100 border-l-4 border-red-600 shadow-lg rounded-xl p-4">
+                                <div class="p-0">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h3 class="font-semibold text-red-700">Emergencias</h3>
+                                        <span id="badge-emergencias" class="badge bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">OK</span>
+                                    </div>
+                                    <p id="balance-emergencias" class="text-3xl font-bold text-red-800">$500</p>
+                                    <div class="w-full bg-red-300 rounded-full h-2 mt-4">
+                                        <div id="progress-emergencias" class="bg-red-600 h-2 rounded-full transition-all duration-500 ease-in-out" style="width: 10%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Registrar Ingreso Screen -->
+                <div id="ingreso" class="tab-content hidden" data-tab="ingreso">
+                    <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
+                        <div class="space-y-4 p-6">
+                            <h3 class="text-xl font-semibold text-center text-blue-700">Registrar Ingreso</h3>
+                            <input id="ingreso-monto" type="number" placeholder="Monto (USD)" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                            <input id="ingreso-cliente" type="text" placeholder="Cliente / Fuente" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                            <input id="ingreso-fecha" type="date" placeholder="Fecha" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                            <button id="ingreso-button" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200">Registrar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Registrar Gasto Screen -->
+                <div id="gasto" class="tab-content hidden" data-tab="gasto">
+                    <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
+                        <div class="space-y-4 p-6">
+                            <h3 class="text-xl font-semibold text-center text-orange-700">Registrar Gasto</h3>
+                            <input id="gasto-monto" type="number" placeholder="Monto (USD)" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
+                            <select id="gasto-categoria" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                <option value="" disabled selected>Categoría</option>
+                                <option value="produccion">Producción</option>
+                                <option value="gastosFijos">Gastos Fijos</option>
+                                <option value="reserva">Reserva</option>
+                                <option value="emergencias">Emergencias</option>
+                            </select>
+                            <input id="gasto-descripcion" type="text" placeholder="Descripción" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
+                            
+                            <!-- New file input for evidence -->
+                            <div class="space-y-2">
+                                <label for="gasto-evidencia" class="block text-sm font-medium text-gray-700">Adjuntar comprobante:</label>
+                                <input id="gasto-evidencia" type="file" accept="image/*" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
+                            </div>
+
+                            <button id="gasto-button" class="w-full bg-orange-600 text-white font-bold py-3 rounded-lg hover:bg-orange-700 transition-colors duration-200">Registrar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Historial Screen -->
+                <div id="historial" class="tab-content hidden" data-tab="historial">
+                    <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl">
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-purple-700 text-center mb-4">Historial de Movimientos</h3>
+                            
+                            <!-- Filtering options -->
+                            <div class="flex flex-wrap items-center space-x-2 space-y-2 md:space-y-0 mb-4">
+                                <span class="text-sm font-semibold text-gray-700">Filtrar por:</span>
+                                <select id="filter-type" class="p-2 border border-gray-300 rounded-lg text-sm">
+                                    <option value="all">Todos los movimientos</option>
+                                    <option value="ingreso">Solo Ingresos</option>
+                                    <option value="gasto">Solo Gastos</option>
+                                </select>
+                                <select id="filter-category" class="p-2 border border-gray-300 rounded-lg text-sm hidden">
+                                    <option value="all">Todas las categorías</option>
+                                    <option value="produccion">Producción</option>
+                                    <option value="gastosFijos">Gastos Fijos</option>
+                                    <option value="reserva">Reserva</option>
+                                    <option value="emergencias">Emergencias</option>
+                                </select>
+                                <span class="text-sm font-bold text-gray-700 ml-auto hidden" id="total-filtered-span">Total: <span id="total-filtered"></span></span>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left table-auto border-collapse">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="p-3 font-medium text-gray-700 rounded-tl-lg">Tipo</th>
+                                            <th class="p-3 font-medium text-gray-700">Descripción</th>
+                                            <th class="p-3 font-medium text-gray-700">Categoría</th>
+                                            <th class="p-3 font-medium text-gray-700">Monto</th>
+                                            <th class="p-3 font-medium text-gray-700">Fecha</th>
+                                            <th class="p-3 font-medium text-gray-700">Evidencia</th>
+                                            <th class="p-3 font-medium text-gray-700 rounded-tr-lg">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transaction-history-table">
+                                        <!-- History rows will be inserted here by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Reportes Screen -->
+                <div id="reportes" class="tab-content hidden" data-tab="reportes">
+                    <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
+                        <div class="space-y-4 p-6">
+                            <h3 class="text-xl font-semibold text-green-700 text-center">Generar Reportes</h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-semibold text-gray-700">Filtrar por mes:</span>
+                                <input type="month" id="report-month-picker" class="p-2 border border-gray-300 rounded-lg text-sm"/>
+                            </div>
+                            <button id="generate-report-button" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200">Generar Informe</button>
+                            <hr class="my-4 border-gray-200"/>
+                            <div id="report-summary" class="hidden">
+                                <h4 id="report-title" class="text-lg font-bold text-gray-800 mb-2"></h4>
+                                <p class="text-gray-700">Total Ingresos: <span id="total-ingresos" class="font-bold text-green-600"></span></p>
+                                <p class="text-gray-700">Total Gastos: <span id="total-gastos" class="font-bold text-red-600"></span></p>
+                                <p class="text-gray-700">Saldo Actual: <span id="saldo-actual" class="font-bold text-blue-600"></span></p>
+                                <button id="exportar-pdf-button" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition-colors duration-200 mt-4">Exportar PDF del Reporte</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Ajustes Screen -->
+                <div id="ajustes" class="tab-content hidden" data-tab="ajustes">
+                    <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
+                        <div class="space-y-4 p-6">
+                            <h3 class="text-xl font-semibold text-gray-700 text-center">Ajustes</h3>
+                            <div class="space-y-4">
+                                <h4 class="text-lg font-semibold text-gray-600">Modificar Porcentajes</h4>
+                                <input id="percent-produccion" type="number" placeholder="% Producción" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <input id="percent-gastosFijos" type="number" placeholder="% Gastos Fijos" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <input id="percent-reserva" type="number" placeholder="% Reserva" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <input id="percent-emergencias" type="number" placeholder="% Emergencias" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <button id="save-settings-button" class="w-full bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">Guardar Cambios</button>
+                            </div>
+                            
+                            <hr class="my-4 border-gray-200"/>
+                            
+                            <div class="space-y-4">
+                                <h4 class="text-lg font-semibold text-gray-600">Modificar Usuario</h4>
+                                <input id="new-username" type="text" placeholder="Nuevo Usuario" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <input id="current-password" type="password" placeholder="Contraseña Actual" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <button id="update-username-button" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200">Actualizar Usuario</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML for the alert/confirmation dialog (Modal) -->
+    <div id="alert-dialog" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 space-y-4">
+            <h3 id="alert-title" class="text-lg font-bold text-gray-900"></h3>
+            <p id="alert-message" class="text-sm text-gray-500"></p>
+            <div class="flex justify-end space-x-2">
+                <button id="alert-cancel" class="hidden px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors duration-200">Cancelar</button>
+                <button id="alert-continue" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New HTML for the image viewer dialog (Modal) -->
+    <div id="image-viewer-dialog" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+            <div class="flex justify-end">
+                <button id="close-image-viewer" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            </div>
+            <img id="viewer-image" src="" alt="Comprobante" class="w-full h-auto object-contain rounded-lg mt-2"/>
+        </div>
+    </div>
+    
+    <script>
+        // JavaScript for application logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial application state
+            let isLoggedIn = false;
+            let balances = {
+                produccion: 2000,
+                gastosFijos: 1500,
+                reserva: 1000,
+                emergencias: 500,
+            };
+            let transactionHistory = [
+                { id: 1, type: "ingreso", amount: 5000, client: "Cliente A", date: "2025-08-01" },
+                { id: 2, type: "gasto", amount: 1200, category: "Producción", description: "Materiales", date: "2025-08-02" },
+                { id: 3, type: "gasto", amount: 500, category: "Gastos Fijos", description: "Alquiler de local", date: "2025-08-05" },
+            ];
+            let nextId = 4; // To give each transaction a unique ID
+            let editingId = null; // To track which transaction is being edited
+
+            // UI elements
+            const tabTriggers = document.querySelectorAll('.tab-trigger');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const loginButton = document.getElementById('login-button');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const ingresoButton = document.getElementById('ingreso-button');
+            const gastoButton = document.getElementById('gasto-button');
+            const gastoEvidenciaInput = document.getElementById('gasto-evidencia');
+            const alertDialog = document.getElementById('alert-dialog');
+            const alertTitle = document.getElementById('alert-title');
+            const alertMessage = document.getElementById('alert-message');
+            const alertCancelButton = document.getElementById('alert-cancel');
+            const alertContinueButton = document.getElementById('alert-continue');
+            const historyTableBody = document.getElementById('transaction-history-table');
+            const imageViewerDialog = document.getElementById('image-viewer-dialog');
+            const viewerImage = document.getElementById('viewer-image');
+            const closeImageViewerButton = document.getElementById('close-image-viewer');
+            const filterTypeSelect = document.getElementById('filter-type');
+            const filterCategorySelect = document.getElementById('filter-category');
+            const totalFilteredSpan = document.getElementById('total-filtered-span');
+            const totalFilteredText = document.getElementById('total-filtered');
+            
+            // New UI elements for username update
+            const newUsernameInput = document.getElementById('new-username');
+            const currentPasswordInput = document.getElementById('current-password');
+            const updateUsernameButton = document.getElementById('update-username-button');
+            
+            // New UI elements for reports
+            const reportMonthPicker = document.getElementById('report-month-picker');
+            const generateReportButton = document.getElementById('generate-report-button');
+            const reportSummaryDiv = document.getElementById('report-summary');
+            const reportTitle = document.getElementById('report-title');
+            const exportDashboardButton = document.getElementById('export-dashboard-button');
+            const exportReportButton = document.getElementById('exportar-pdf-button');
+
+
+            // Access credentials
+            let correctUsername = 'ADMICONSTRUCAMBO'; // Initial username
+            const correctPassword = '1234';
+
+            let pendingTransaction = null;
+            let pendingEvidence = null; // Variable to hold the evidence data
+
+            // --- UI Update Functions ---
+
+            function showTab(tabId) {
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(tabId).classList.remove('hidden');
+
+                tabTriggers.forEach(trigger => {
+                    if (trigger.dataset.tab === tabId) {
+                        trigger.classList.add('bg-blue-600', 'text-white');
+                        trigger.classList.remove('bg-transparent', 'text-gray-600');
+                    } else {
+                        trigger.classList.remove('bg-blue-600', 'text-white');
+                        trigger.classList.add('bg-transparent', 'text-gray-600');
+                    }
+                });
+            }
+
+            function updateDashboard() {
+                const initialAmounts = { produccion: 5000, gastosFijos: 5000, reserva: 5000, emergencias: 5000 };
+                
+                Object.keys(balances).forEach(key => {
+                    const balanceElement = document.getElementById(`balance-${key}`);
+                    const progressElement = document.getElementById(`progress-${key}`);
+                    const badgeElement = document.getElementById(`badge-${key}`);
+
+                    const balance = balances[key];
+                    const progressValue = (balance / initialAmounts[key]) * 100;
+
+                    balanceElement.textContent = `$${balance.toLocaleString('en-US')}`;
+                    progressElement.style.width = `${Math.max(0, Math.min(100, progressValue))}%`;
+
+                    let statusText, statusColor;
+                    if (progressValue >= 75) {
+                        statusText = "OK";
+                        statusColor = "bg-green-500";
+                    } else if (progressValue >= 25) {
+                        statusText = "Atención";
+                        statusColor = "bg-yellow-500";
+                    } else {
+                        statusText = "Crítico";
+                        statusColor = "bg-red-500";
+                    }
+                    badgeElement.textContent = statusText;
+                    badgeElement.className = `badge text-white text-xs px-2 py-1 rounded-full font-bold ${statusColor}`;
+                });
+            }
+
+            function updateHistoryTable() {
+                const filterType = filterTypeSelect.value;
+                const filterCategory = filterCategorySelect.value;
+                
+                const filteredHistory = transactionHistory.filter(transaction => {
+                    if (filterType === 'ingreso') {
+                        return transaction.type === 'ingreso';
+                    }
+                    if (filterType === 'gasto') {
+                        if (filterCategory === 'all') {
+                            return transaction.type === 'gasto';
+                        }
+                        return transaction.type === 'gasto' && transaction.category === filterCategory;
+                    }
+                    return true;
+                });
+                
+                // Calculate and show totals
+                let totalFilteredAmount = 0;
+                if (filterType !== 'all') {
+                    totalFilteredAmount = filteredHistory.reduce((sum, t) => sum + t.amount, 0);
+                    totalFilteredText.textContent = `$${totalFilteredAmount.toLocaleString('en-US')}`;
+                    totalFilteredSpan.classList.remove('hidden');
+                } else {
+                    totalFilteredSpan.classList.add('hidden');
+                }
+
+                historyTableBody.innerHTML = '';
+                filteredHistory.forEach((transaction, index) => {
+                    const row = document.createElement('tr');
+                    const rowColor = transaction.type === 'ingreso' ? 'bg-green-50' : 'bg-red-50';
+                    row.className = rowColor;
+                    
+                    const typeCell = document.createElement('td');
+                    typeCell.textContent = transaction.type === 'ingreso' ? 'Ingreso' : 'Gasto';
+                    typeCell.className = 'p-3 font-medium';
+
+                    const descCell = document.createElement('td');
+                    descCell.textContent = transaction.type === 'ingreso' ? transaction.client : transaction.description;
+                    descCell.className = 'p-3';
+
+                    const categoryCell = document.createElement('td');
+                    categoryCell.textContent = transaction.type === 'gasto' ? transaction.category : '-';
+                    categoryCell.className = 'p-3';
+
+                    const amountCell = document.createElement('td');
+                    amountCell.textContent = `$${transaction.amount.toLocaleString('en-US')}`;
+                    amountCell.className = `p-3 font-bold ${transaction.type === 'ingreso' ? 'text-green-600' : 'text-red-600'}`;
+
+                    const dateCell = document.createElement('td');
+                    // Format the date for display
+                    const dateObj = new Date(transaction.date);
+                    dateCell.textContent = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    dateCell.className = 'p-3';
+                    
+                    const evidenceCell = document.createElement('td');
+                    evidenceCell.className = 'p-3 text-center';
+                    if (transaction.evidence) {
+                        const eyeButton = document.createElement('button');
+                        eyeButton.textContent = '👁️'; // Emoji for the eye
+                        eyeButton.className = 'text-xl hover:scale-110 transition-transform duration-200';
+                        eyeButton.addEventListener('click', () => {
+                            // Show the image viewer with the correct evidence
+                            viewerImage.src = transaction.evidence;
+                            imageViewerDialog.classList.remove('hidden');
+                        });
+                        evidenceCell.appendChild(eyeButton);
+                    } else {
+                        evidenceCell.textContent = '-';
+                    }
+
+                    const actionsCell = document.createElement('td');
+                    actionsCell.className = 'p-3 flex space-x-2';
+                    const editButton = document.createElement('button');
+                    editButton.textContent = '✏️'; // Pencil emoji
+                    editButton.title = 'Editar';
+                    editButton.className = 'text-lg hover:scale-110 transition-transform duration-200';
+                    editButton.addEventListener('click', () => editTransaction(transaction.id));
+                    actionsCell.appendChild(editButton);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '🗑️'; // Trash can emoji
+                    deleteButton.title = 'Eliminar';
+                    deleteButton.className = 'text-lg hover:scale-110 transition-transform duration-200';
+                    deleteButton.addEventListener('click', () => deleteTransaction(transaction.id));
+                    actionsCell.appendChild(deleteButton);
+
+
+                    row.appendChild(typeCell);
+                    row.appendChild(descCell);
+                    row.appendChild(categoryCell); // Add category cell
+                    row.appendChild(amountCell);
+                    row.appendChild(dateCell);
+                    row.appendChild(evidenceCell);
+                    row.appendChild(actionsCell); // Add actions cell
+                    historyTableBody.appendChild(row);
+                });
+            }
+
+            function updateReports(month, year) {
+                const filteredTransactions = transactionHistory.filter(t => {
+                    const transactionDate = new Date(t.date);
+                    return transactionDate.getFullYear() === year && transactionDate.getMonth() === month;
+                });
+
+                const totalIngresos = filteredTransactions.filter(t => t.type === 'ingreso').reduce((sum, t) => sum + t.amount, 0);
+                const totalGastos = filteredTransactions.filter(t => t.type === 'gasto').reduce((sum, t) => sum + t.amount, 0);
+                const saldoActual = totalIngresos - totalGastos;
+                
+                const monthName = new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+                reportTitle.textContent = `Reporte del mes de ${monthName}`;
+                document.getElementById('total-ingresos').textContent = `$${totalIngresos.toLocaleString('en-US')}`;
+                document.getElementById('total-gastos').textContent = `$${totalGastos.toLocaleString('en-US')}`;
+                document.getElementById('saldo-actual').textContent = `$${saldoActual.toLocaleString('en-US')}`;
+                reportSummaryDiv.classList.remove('hidden');
+            }
+
+            function reCalculateBalances() {
+                // Reset balances
+                balances = {
+                    produccion: 0,
+                    gastosFijos: 0,
+                    reserva: 0,
+                    emergencias: 0,
+                };
+                // Recalculate based on current history
+                transactionHistory.forEach(t => {
+                    if (t.type === 'ingreso') {
+                        balances.produccion += t.amount * 0.40;
+                        balances.gastosFijos += t.amount * 0.30;
+                        balances.reserva += t.amount * 0.20;
+                        balances.emergencias += t.amount * 0.10;
+                    } else if (t.type === 'gasto') {
+                        balances[t.category] -= t.amount;
+                    }
+                });
+                updateDashboard();
+            }
+            
+            // --- Event Handlers ---
+
+            // Tab switching logic
+            tabTriggers.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tab;
+                    if (tab === 'login' || isLoggedIn) {
+                        showTab(tab);
+                        if (tab === 'dashboard') {
+                            updateDashboard();
+                        } else if (tab === 'historial') {
+                            updateHistoryTable();
+                        } else if (tab === 'reportes') {
+                            // Hide the report summary until a new one is generated
+                            reportSummaryDiv.classList.add('hidden');
+                        }
+                    } else {
+                        showAlert('Por favor, inicie sesión primero.', false, false);
+                    }
+                });
+            });
+            
+            // Handle history filter changes
+            filterTypeSelect.addEventListener('change', () => {
+                if (filterTypeSelect.value === 'gasto') {
+                    filterCategorySelect.classList.remove('hidden');
+                } else {
+                    filterCategorySelect.classList.add('hidden');
+                }
+                updateHistoryTable();
+            });
+            filterCategorySelect.addEventListener('change', () => {
+                updateHistoryTable();
+            });
+
+            // Login logic
+            loginButton.addEventListener('click', () => {
+                const username = usernameInput.value;
+                const password = passwordInput.value;
+
+                if (username === correctUsername && password === correctPassword) {
+                    isLoggedIn = true;
+                    // Enable all tabs
+                    tabTriggers.forEach(trigger => trigger.disabled = false);
+                    showTab('dashboard');
+                    updateDashboard();
+                    showAlert('¡Bienvenido, ' + correctUsername + '!', false, true);
+                } else {
+                    showAlert('Usuario o contraseña incorrectos.', false, true);
+                }
+            });
+
+            // Handle file input change to read the image
+            gastoEvidenciaInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        pendingEvidence = e.target.result; // Store the Base64 data
+                    };
+                    reader.readAsDataURL(file); // Read the file as a Base64 string
+                } else {
+                    pendingEvidence = null;
+                }
+            });
+
+            // Register/Update Income logic
+            ingresoButton.addEventListener('click', () => {
+                const monto = parseFloat(document.getElementById('ingreso-monto').value);
+                const cliente = document.getElementById('ingreso-cliente').value;
+                const fecha = document.getElementById('ingreso-fecha').value;
+                
+                if (isNaN(monto) || monto <= 0) {
+                    showAlert('Por favor, ingrese un monto válido.', false, true);
+                    return;
+                }
+
+                pendingTransaction = { type: 'ingreso', amount: monto, client: cliente, date: fecha };
+                showAlert('¿Está de acuerdo en confirmar el registro?', true, false);
+            });
+
+            // Register/Update Expense logic
+            gastoButton.addEventListener('click', () => {
+                const monto = parseFloat(document.getElementById('gasto-monto').value);
+                const categoria = document.getElementById('gasto-categoria').value;
+                const descripcion = document.getElementById('gasto-descripcion').value;
+
+                if (isNaN(monto) || monto <= 0 || !categoria) {
+                    showAlert('Por favor, complete todos los campos.', false, true);
+                    return;
+                }
+                
+                // If the expense is greater than the balance, ask for confirmation
+                if (balances[categoria] < monto && editingId === null) {
+                     pendingTransaction = { type: 'gasto', amount: monto, category: categoria, description: descripcion, evidence: pendingEvidence, isConfirmed: false };
+                     showAlert('El gasto de $' + monto + ' excede el saldo de ' + categoria + '. ¿Desea continuar?', true, false);
+                } else {
+                    pendingTransaction = { type: 'gasto', amount: monto, category: categoria, description: descripcion, evidence: pendingEvidence, isConfirmed: true };
+                    showAlert('¿Está de acuerdo en confirmar el registro?', true, false);
+                }
+            });
+            
+            // Function to delete a transaction
+           function deleteTransaction(id) {
+    showAlert('¿Estás seguro que deseas eliminar este registro?', true, false, (confirmed) => {
+        if (confirmed) {
+            const transactionIndex = transactionHistory.findIndex(t => t.id === id);
+            if (transactionIndex > -1) {
+                transactionHistory.splice(transactionIndex, 1);
+                reCalculateBalances();
+                updateHistoryTable();
+            }
+        }
+    });
+}
+
+            
+            // Function to edit a transaction
+            function editTransaction(id) {
+                const transactionToEdit = transactionHistory.find(t => t.id === id);
+                if (!transactionToEdit) return;
+
+                editingId = id;
+                
+                // Populate the correct form
+                if (transactionToEdit.type === 'ingreso') {
+                    showTab('ingreso');
+                    document.getElementById('ingreso-monto').value = transactionToEdit.amount;
+                    document.getElementById('ingreso-cliente').value = transactionToEdit.client;
+                    document.getElementById('ingreso-fecha').value = transactionToEdit.date;
+                    ingresoButton.textContent = 'Actualizar Ingreso';
+                } else if (transactionToEdit.type === 'gasto') {
+                    showTab('gasto');
+                    document.getElementById('gasto-monto').value = transactionToEdit.amount;
+                    document.getElementById('gasto-categoria').value = transactionToEdit.category;
+                    document.getElementById('gasto-descripcion').value = transactionToEdit.description;
+                    gastoEvidenciaInput.value = ''; // Clear file input, user has to re-select
+                    pendingEvidence = transactionToEdit.evidence || null;
+                    gastoButton.textContent = 'Actualizar Gasto';
+                }
+            }
+
+            // Update Username logic
+            updateUsernameButton.addEventListener('click', () => {
+                const newUsername = newUsernameInput.value;
+                const currentPassword = currentPasswordInput.value;
+
+                if (currentPassword === correctPassword) {
+                    correctUsername = newUsername;
+                    showAlert('¡Usuario actualizado con éxito!', false, true);
+                    // Clear the input fields after successful update
+                    newUsernameInput.value = '';
+                    currentPasswordInput.value = '';
+                } else {
+                    showAlert('Contraseña incorrecta. No se pudo actualizar el usuario.', false, true);
+                }
+            });
+            
+            // Generate Report Button logic
+            generateReportButton.addEventListener('click', () => {
+                const selectedMonthYear = reportMonthPicker.value;
+                if (!selectedMonthYear) {
+                    showAlert('Por favor, seleccione un mes y año para el reporte.', false, true);
+                    return;
+                }
+                const [year, month] = selectedMonthYear.split('-').map(Number);
+                updateReports(month - 1, year); // Month is 0-indexed
+            });
+
+            // Export Dashboard logic
+            exportDashboardButton.addEventListener('click', () => {
+                window.print();
+            });
+            
+            // Export Report logic
+            exportReportButton.addEventListener('click', () => {
+                window.print();
+            });
+
+            // --- Alert/Confirmation Dialog Logic ---
+           let isCustomModalFlow = false; // evita choques entre el modal y otros handlers
+
+
+         function showAlert(message, isConfirmation = false, isSimpleAlert = false, callback = null) {
+    alertTitle.textContent = isConfirmation ? 'Confirmación' : 'Notificación';
+    alertMessage.textContent = message;
+    alertDialog.classList.remove('hidden');
+
+    // Mostrar/ocultar botones
+    if (isConfirmation) {
+        alertCancelButton.classList.remove('hidden');
+        alertContinueButton.textContent = "Aceptar";
+    } else {
+        alertCancelButton.classList.add('hidden');
+        alertContinueButton.textContent = "Cerrar";
+    }
+
+    // Limpia handlers anteriores SIEMPRE
+    alertContinueButton.onclick = null;
+    alertCancelButton.onclick = null;
+
+    // Si hay callback (flujo personalizado), evitamos que el listener global actúe
+    if (isConfirmation && typeof callback === 'function') {
+        isCustomModalFlow = true;
+
+        alertContinueButton.onclick = () => {
+            isCustomModalFlow = false;
+            callback(true);
+            alertDialog.classList.add('hidden');
+        };
+        alertCancelButton.onclick = () => {
+            isCustomModalFlow = false;
+            callback(false);
+            alertDialog.classList.add('hidden');
+        };
+    } else {
+        // Alertas simples: solo cerrar
+        alertContinueButton.onclick = () => {
+            alertDialog.classList.add('hidden');
+        };
+    }
+}
+
+            
+           alertContinueButton.addEventListener('click', () => {
+    // Si estamos en un flujo personalizado (como eliminar), no hacemos nada aquí
+    if (isCustomModalFlow) {
+        return;
+    }
+
+    if (pendingTransaction) {
+        if (pendingTransaction.type === 'ingreso') {
+            if (editingId !== null) {
+                const transactionIndex = transactionHistory.findIndex(t => t.id === editingId);
+                if (transactionIndex > -1) {
+                    transactionHistory[transactionIndex] = {
+                        ...transactionHistory[transactionIndex],
+                        amount: pendingTransaction.amount,
+                        client: pendingTransaction.client || "Ingreso Genérico",
+                        date: pendingTransaction.date
+                    };
+                }
+                ingresoButton.textContent = 'Registrar';
+                editingId = null;
+            } else {
+                const { amount, client, date } = pendingTransaction;
+                transactionHistory.push({ id: nextId++, type: "ingreso", amount: amount, client: client || "Ingreso Genérico", date: date || new Date().toISOString().split('T')[0] });
+            }
+            document.getElementById('ingreso-monto').value = '';
+            document.getElementById('ingreso-cliente').value = '';
+            document.getElementById('ingreso-fecha').value = '';
+        } else if (pendingTransaction.type === 'gasto') {
+            if (editingId !== null) {
+                const transactionIndex = transactionHistory.findIndex(t => t.id === editingId);
+                if (transactionIndex > -1) {
+                    transactionHistory[transactionIndex] = {
+                        ...transactionHistory[transactionIndex],
+                        amount: pendingTransaction.amount,
+                        category: pendingTransaction.category,
+                        description: pendingTransaction.description || `Gasto en ${pendingTransaction.category}`,
+                        evidence: pendingEvidence
+                    };
+                }
+                gastoButton.textContent = 'Registrar';
+                editingId = null;
+            } else {
+                const { amount, category, description, evidence } = pendingTransaction;
+                if (balances[category] >= amount || pendingTransaction.isConfirmed) {
+                    transactionHistory.push({ id: nextId++, type: "gasto", amount: amount, category: category, description: description || `Gasto en ${category}`, date: new Date().toISOString().split('T')[0], evidence: evidence });
+                }
+            }
+            document.getElementById('gasto-monto').value = '';
+            document.getElementById('gasto-categoria').value = '';
+            document.getElementById('gasto-descripcion').value = '';
+            document.getElementById('gasto-evidencia').value = '';
+            pendingEvidence = null;
+        }
+        reCalculateBalances();
+        updateHistoryTable();
+    }
+    alertDialog.classList.add('hidden');
+    pendingTransaction = null;
+    // Reset handlers por si acaso
+    alertContinueButton.onclick = null;
+    alertCancelButton.onclick = null;
+});
+
+            
+            alertCancelButton.addEventListener('click', () => {
+                alertDialog.classList.add('hidden');
+                pendingTransaction = null;
+            });
+            
+            // Close image viewer logic
+            closeImageViewerButton.addEventListener('click', () => {
+                imageViewerDialog.classList.add('hidden');
+            });
+            imageViewerDialog.addEventListener('click', (e) => {
+                if (e.target === imageViewerDialog) {
+                    imageViewerDialog.classList.add('hidden');
+                }
+            });
+
+            // Initial view
+            showTab('login');
+        });
+    </script>
+</body>
+</html>
