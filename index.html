@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CONSTRUCAMBO Finanzas</title>
-    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for typography and printing */
@@ -24,22 +23,17 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <!-- Main application container -->
     <div class="p-4 space-y-6 max-w-4xl mx-auto">
-        <!-- Header -->
         <header class="text-center p-4 non-printable">
             <h1 class="text-3xl font-bold text-blue-800">CONSTRUCAMBO Finanzas</h1>
             <p class="text-gray-600 mt-2">Prototipo de App de Gestión Financiera</p>
         </header>
         
-        <!-- Printable Header (for PDF export) -->
         <div class="printable-header hidden text-center mb-6">
             <h1 class="text-3xl font-bold text-blue-800 mb-2">Reporte Financiero CONSTRUCAMBO</h1>
         </div>
 
-        <!-- Main content with tabs -->
         <div class="w-full">
-            <!-- Tab navigation buttons -->
             <div class="flex justify-center mb-6 overflow-x-auto tab-list">
                 <div id="tab-list" class="flex flex-nowrap space-x-2 p-1 bg-white rounded-xl shadow-sm">
                     <button class="tab-trigger px-4 py-2 text-sm md:text-base font-semibold rounded-lg transition-colors duration-200" data-tab="login">Login</button>
@@ -52,9 +46,7 @@
                 </div>
             </div>
 
-            <!-- Tab contents -->
             <div id="tab-content-container">
-                <!-- 1. Login Screen -->
                 <div id="login" class="tab-content" data-tab="login">
                     <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
                         <div class="space-y-6 p-6">
@@ -66,14 +58,12 @@
                     </div>
                 </div>
 
-                <!-- 2. Dashboard Screen -->
                 <div id="dashboard" class="tab-content hidden" data-tab="dashboard">
                     <div class="max-w-md mx-auto p-4 mb-4">
                         <button id="export-dashboard-button" class="non-printable w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-200">Exportar Dashboard (PDF)</button>
                     </div>
                     <div class="printable-content">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <!-- Producción Card -->
                             <div class="bg-blue-100 border-l-4 border-blue-600 shadow-lg rounded-xl p-4">
                                 <div class="p-0">
                                     <div class="flex justify-between items-center mb-2">
@@ -86,11 +76,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Gastos Fijos Card -->
                             <div class="bg-orange-100 border-l-4 border-orange-600 shadow-lg rounded-xl p-4">
                                 <div class="p-0">
                                     <div class="flex justify-between items-center mb-2">
-                                        <h3 class="font-semibold text-orange-700">Gastos Fijos</h3>
+                                        <h3 class="font-semibold text-orange-700">Gastos Fijos y Deuda</h3>
                                         <span id="badge-gastosFijos" class="badge bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">OK</span>
                                     </div>
                                     <p id="balance-gastosFijos" class="text-3xl font-bold text-orange-800">$1,500</p>
@@ -99,11 +88,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Reserva Card -->
                             <div class="bg-green-100 border-l-4 border-green-600 shadow-lg rounded-xl p-4">
                                 <div class="p-0">
                                     <div class="flex justify-between items-center mb-2">
-                                        <h3 class="font-semibold text-green-700">Reserva</h3>
+                                        <h3 class="font-semibold text-green-700">Utilidades</h3>
                                         <span id="badge-reserva" class="badge bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">OK</span>
                                     </div>
                                     <p id="balance-reserva" class="text-3xl font-bold text-green-800">$1,000</p>
@@ -112,7 +100,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Emergencias Card -->
                             <div class="bg-red-100 border-l-4 border-red-600 shadow-lg rounded-xl p-4">
                                 <div class="p-0">
                                     <div class="flex justify-between items-center mb-2">
@@ -129,11 +116,22 @@
                     </div>
                 </div>
 
-                <!-- 3. Registrar Ingreso Screen -->
                 <div id="ingreso" class="tab-content hidden" data-tab="ingreso">
                     <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
                         <div class="space-y-4 p-6">
                             <h3 class="text-xl font-semibold text-center text-blue-700">Registrar Ingreso</h3>
+                            <select id="ingreso-tipo-registro" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="distribuir">Distribuir automáticamente</option>
+                                <option value="categoria">Asignar a categoría específica</option>
+                            </select>
+
+                            <select id="ingreso-categoria" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden">
+                                <option value="" disabled selected>Selecciona Categoría</option>
+                                <option value="produccion">Producción</option>
+                                <option value="gastosFijos">Gastos Fijos y Deuda</option>
+                                <option value="reserva">Utilidades</option> <option value="emergencias">Emergencias</option>
+                            </select>
+
                             <input id="ingreso-monto" type="number" placeholder="Monto (USD)" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                             <input id="ingreso-cliente" type="text" placeholder="Cliente / Fuente" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                             <input id="ingreso-fecha" type="date" placeholder="Fecha" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
@@ -142,7 +140,6 @@
                     </div>
                 </div>
 
-                <!-- 4. Registrar Gasto Screen -->
                 <div id="gasto" class="tab-content hidden" data-tab="gasto">
                     <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
                         <div class="space-y-4 p-6">
@@ -151,13 +148,11 @@
                             <select id="gasto-categoria" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
                                 <option value="" disabled selected>Categoría</option>
                                 <option value="produccion">Producción</option>
-                                <option value="gastosFijos">Gastos Fijos</option>
-                                <option value="reserva">Reserva</option>
-                                <option value="emergencias">Emergencias</option>
+                                <option value="gastosFijos">Gastos Fijos y Deuda</option>
+                                <option value="reserva">Utilidades</option> <option value="emergencias">Emergencias</option>
                             </select>
                             <input id="gasto-descripcion" type="text" placeholder="Descripción" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
                             
-                            <!-- New file input for evidence -->
                             <div class="space-y-2">
                                 <label for="gasto-evidencia" class="block text-sm font-medium text-gray-700">Adjuntar comprobante:</label>
                                 <input id="gasto-evidencia" type="file" accept="image/*" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"/>
@@ -168,13 +163,11 @@
                     </div>
                 </div>
 
-                <!-- 5. Historial Screen -->
                 <div id="historial" class="tab-content hidden" data-tab="historial">
                     <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl">
                         <div class="p-6">
                             <h3 class="text-xl font-semibold text-purple-700 text-center mb-4">Historial de Movimientos</h3>
                             
-                            <!-- Filtering options -->
                             <div class="flex flex-wrap items-center space-x-2 space-y-2 md:space-y-0 mb-4">
                                 <span class="text-sm font-semibold text-gray-700">Filtrar por:</span>
                                 <select id="filter-type" class="p-2 border border-gray-300 rounded-lg text-sm">
@@ -185,9 +178,7 @@
                                 <select id="filter-category" class="p-2 border border-gray-300 rounded-lg text-sm hidden">
                                     <option value="all">Todas las categorías</option>
                                     <option value="produccion">Producción</option>
-                                    <option value="gastosFijos">Gastos Fijos</option>
-                                    <option value="reserva">Reserva</option>
-                                    <option value="emergencias">Emergencias</option>
+                                    <option value="gastosFijos">Gastos Fijos y Deuda</option> <option value="reserva">Utilidades</option> <option value="emergencias">Emergencias</option>
                                 </select>
                                 <span class="text-sm font-bold text-gray-700 ml-auto hidden" id="total-filtered-span">Total: <span id="total-filtered"></span></span>
                             </div>
@@ -206,15 +197,13 @@
                                         </tr>
                                     </thead>
                                     <tbody id="transaction-history-table">
-                                        <!-- History rows will be inserted here by JavaScript -->
-                                    </tbody>
+                                        </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 6. Reportes Screen -->
                 <div id="reportes" class="tab-content hidden" data-tab="reportes">
                     <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
                         <div class="space-y-4 p-6">
@@ -236,7 +225,6 @@
                     </div>
                 </div>
 
-                <!-- 7. Ajustes Screen -->
                 <div id="ajustes" class="tab-content hidden" data-tab="ajustes">
                     <div class="max-w-md mx-auto bg-white shadow-lg rounded-2xl">
                         <div class="space-y-4 p-6">
@@ -244,9 +232,8 @@
                             <div class="space-y-4">
                                 <h4 class="text-lg font-semibold text-gray-600">Modificar Porcentajes</h4>
                                 <input id="percent-produccion" type="number" placeholder="% Producción" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
-                                <input id="percent-gastosFijos" type="number" placeholder="% Gastos Fijos" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
-                                <input id="percent-reserva" type="number" placeholder="% Reserva" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
-                                <input id="percent-emergencias" type="number" placeholder="% Emergencias" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <input id="percent-gastosFijos" type="number" placeholder="% Gastos Fijos y Deuda" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
+                                <input id="percent-reserva" type="number" placeholder="% Utilidades" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/> <input id="percent-emergencias" type="number" placeholder="% Emergencias" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>
                                 <button id="save-settings-button" class="w-full bg-gray-600 text-white font-bold py-3 rounded-lg hover:bg-gray-700 transition-colors duration-200">Guardar Cambios</button>
                             </div>
                             
@@ -266,7 +253,6 @@
         </div>
     </div>
 
-    <!-- HTML for the alert/confirmation dialog (Modal) -->
     <div id="alert-dialog" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 space-y-4">
             <h3 id="alert-title" class="text-lg font-bold text-gray-900"></h3>
@@ -278,7 +264,6 @@
         </div>
     </div>
 
-    <!-- New HTML for the image viewer dialog (Modal) -->
     <div id="image-viewer-dialog" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
             <div class="flex justify-end">
@@ -296,13 +281,13 @@
             let balances = {
                 produccion: 2000,
                 gastosFijos: 1500,
-                reserva: 1000,
+                reserva: 1000, // AJUSTE: Se mantiene la clave interna 'reserva'
                 emergencias: 500,
             };
             let transactionHistory = [
-                { id: 1, type: "ingreso", amount: 5000, client: "Cliente A", date: "2025-08-01" },
-                { id: 2, type: "gasto", amount: 1200, category: "Producción", description: "Materiales", date: "2025-08-02" },
-                { id: 3, type: "gasto", amount: 500, category: "Gastos Fijos", description: "Alquiler de local", date: "2025-08-05" },
+                { id: 1, type: "ingreso", amount: 5000, client: "Cliente A", date: "2025-08-01", category: "distribuir" }, // AJUSTE: Añadido 'category' para ingresos existentes
+                { id: 2, type: "gasto", amount: 1200, category: "produccion", description: "Materiales", date: "2025-08-02" },
+                { id: 3, type: "gasto", amount: 500, category: "gastosFijos", description: "Alquiler de local", date: "2025-08-05" },
             ];
             let nextId = 4; // To give each transaction a unique ID
             let editingId = null; // To track which transaction is being edited
@@ -342,6 +327,10 @@
             const reportTitle = document.getElementById('report-title');
             const exportDashboardButton = document.getElementById('export-dashboard-button');
             const exportReportButton = document.getElementById('exportar-pdf-button');
+            
+            // AJUSTE: Nuevos elementos para Ingreso
+            const ingresoTipoRegistroSelect = document.getElementById('ingreso-tipo-registro');
+            const ingresoCategoriaSelect = document.getElementById('ingreso-categoria');
 
 
             // Access credentials
@@ -350,6 +339,25 @@
 
             let pendingTransaction = null;
             let pendingEvidence = null; // Variable to hold the evidence data
+            
+            // AJUSTE: Mapeo de categorías para mostrar en la tabla (incluye la renombrada)
+            const categoryDisplayNames = {
+                produccion: 'Producción',
+                gastosFijos: 'Gastos Fijos y Deuda',
+                reserva: 'Utilidades', // AJUSTE: Cambiado texto visible
+                emergencias: 'Emergencias',
+                distribuir: 'Distribución Automática' // Para ingresos
+            };
+            
+            // AJUSTE: Event Listener para mostrar/ocultar el selector de categoría de Ingresos
+            ingresoTipoRegistroSelect.addEventListener('change', () => {
+                if (ingresoTipoRegistroSelect.value === 'categoria') {
+                    ingresoCategoriaSelect.classList.remove('hidden');
+                } else {
+                    ingresoCategoriaSelect.classList.add('hidden');
+                    ingresoCategoriaSelect.value = ''; // Limpiar la selección
+                }
+            });
 
             // --- UI Update Functions ---
 
@@ -398,6 +406,9 @@
                     badgeElement.textContent = statusText;
                     badgeElement.className = `badge text-white text-xs px-2 py-1 rounded-full font-bold ${statusColor}`;
                 });
+                // AJUSTE: Actualizar el texto visible del Dashboard
+                document.querySelector('[data-tab="dashboard"] .bg-orange-100 h3').textContent = 'Gastos Fijos y Deuda';
+                document.querySelector('[data-tab="dashboard"] .bg-green-100 h3').textContent = 'Utilidades';
             }
 
             function updateHistoryTable() {
@@ -430,6 +441,7 @@
                 historyTableBody.innerHTML = '';
                 filteredHistory.forEach((transaction, index) => {
                     const row = document.createElement('tr');
+                    // AJUSTE: Si el ingreso es por distribución, el color se mantiene verde. Si es por categoría, también.
                     const rowColor = transaction.type === 'ingreso' ? 'bg-green-50' : 'bg-red-50';
                     row.className = rowColor;
                     
@@ -442,7 +454,9 @@
                     descCell.className = 'p-3';
 
                     const categoryCell = document.createElement('td');
-                    categoryCell.textContent = transaction.type === 'gasto' ? transaction.category : '-';
+                    // AJUSTE: Muestra el nombre de la categoría o 'Distribución' para ingresos
+                    const categoryKey = transaction.type === 'ingreso' ? (transaction.category || 'distribuir') : transaction.category;
+                    categoryCell.textContent = categoryKey ? categoryDisplayNames[categoryKey] : '-';
                     categoryCell.className = 'p-3';
 
                     const amountCell = document.createElement('td');
@@ -522,16 +536,22 @@
                 balances = {
                     produccion: 0,
                     gastosFijos: 0,
-                    reserva: 0,
+                    reserva: 0, // AJUSTE: Clave interna
                     emergencias: 0,
                 };
                 // Recalculate based on current history
                 transactionHistory.forEach(t => {
                     if (t.type === 'ingreso') {
-                        balances.produccion += t.amount * 0.40;
-                        balances.gastosFijos += t.amount * 0.30;
-                        balances.reserva += t.amount * 0.20;
-                        balances.emergencias += t.amount * 0.10;
+                        // AJUSTE: Nueva lógica para ingresos
+                        if (t.category && t.category !== 'distribuir') {
+                            balances[t.category] += t.amount;
+                        } else {
+                            // Lógica de distribución automática (por defecto o si se selecciona 'distribuir')
+                            balances.produccion += t.amount * 0.40;
+                            balances.gastosFijos += t.amount * 0.30;
+                            balances.reserva += t.amount * 0.20; // AJUSTE: Clave interna
+                            balances.emergencias += t.amount * 0.10;
+                        }
                     } else if (t.type === 'gasto') {
                         balances[t.category] -= t.amount;
                     }
@@ -565,6 +585,16 @@
             filterTypeSelect.addEventListener('change', () => {
                 if (filterTypeSelect.value === 'gasto') {
                     filterCategorySelect.classList.remove('hidden');
+                    // AJUSTE: Asegurar que el select de categoría tiene los nombres correctos
+                    Array.from(filterCategorySelect.options).forEach(opt => {
+                        if (categoryDisplayNames[opt.value]) {
+                            opt.textContent = categoryDisplayNames[opt.value];
+                        } else if (opt.value === 'gastosFijos') {
+                             opt.textContent = 'Gastos Fijos y Deuda';
+                        } else if (opt.value === 'reserva') {
+                            opt.textContent = 'Utilidades';
+                        }
+                    });
                 } else {
                     filterCategorySelect.classList.add('hidden');
                 }
@@ -610,13 +640,21 @@
                 const monto = parseFloat(document.getElementById('ingreso-monto').value);
                 const cliente = document.getElementById('ingreso-cliente').value;
                 const fecha = document.getElementById('ingreso-fecha').value;
+                // AJUSTE: Obtener el tipo de registro y la categoría específica (si aplica)
+                const tipoRegistro = ingresoTipoRegistroSelect.value;
+                const categoriaIngreso = tipoRegistro === 'categoria' ? ingresoCategoriaSelect.value : 'distribuir';
                 
                 if (isNaN(monto) || monto <= 0) {
                     showAlert('Por favor, ingrese un monto válido.', false, true);
                     return;
                 }
+                // AJUSTE: Validar si se eligió categoría específica y no se seleccionó ninguna
+                if (tipoRegistro === 'categoria' && !categoriaIngreso) {
+                    showAlert('Por favor, seleccione una categoría específica para el ingreso.', false, true);
+                    return;
+                }
 
-                pendingTransaction = { type: 'ingreso', amount: monto, client: cliente, date: fecha };
+                pendingTransaction = { type: 'ingreso', amount: monto, client: cliente, date: fecha, category: categoriaIngreso }; // AJUSTE: Guardar la categoría seleccionada
                 showAlert('¿Está de acuerdo en confirmar el registro?', true, false);
             });
 
@@ -634,7 +672,7 @@
                 // If the expense is greater than the balance, ask for confirmation
                 if (balances[categoria] < monto && editingId === null) {
                      pendingTransaction = { type: 'gasto', amount: monto, category: categoria, description: descripcion, evidence: pendingEvidence, isConfirmed: false };
-                     showAlert('El gasto de $' + monto + ' excede el saldo de ' + categoria + '. ¿Desea continuar?', true, false);
+                     showAlert('El gasto de $' + monto + ' excede el saldo de ' + categoryDisplayNames[categoria] + '. ¿Desea continuar?', true, false); // AJUSTE: Usa el nombre visible
                 } else {
                     pendingTransaction = { type: 'gasto', amount: monto, category: categoria, description: descripcion, evidence: pendingEvidence, isConfirmed: true };
                     showAlert('¿Está de acuerdo en confirmar el registro?', true, false);
@@ -666,6 +704,16 @@
                 // Populate the correct form
                 if (transactionToEdit.type === 'ingreso') {
                     showTab('ingreso');
+                    // AJUSTE: Restaurar la UI del formulario de Ingreso
+                    if (transactionToEdit.category && transactionToEdit.category !== 'distribuir') {
+                        ingresoTipoRegistroSelect.value = 'categoria';
+                        ingresoCategoriaSelect.value = transactionToEdit.category;
+                        ingresoCategoriaSelect.classList.remove('hidden');
+                    } else {
+                        ingresoTipoRegistroSelect.value = 'distribuir';
+                        ingresoCategoriaSelect.classList.add('hidden');
+                        ingresoCategoriaSelect.value = '';
+                    }
                     document.getElementById('ingreso-monto').value = transactionToEdit.amount;
                     document.getElementById('ingreso-cliente').value = transactionToEdit.client;
                     document.getElementById('ingreso-fecha').value = transactionToEdit.date;
@@ -774,22 +822,30 @@
             if (editingId !== null) {
                 const transactionIndex = transactionHistory.findIndex(t => t.id === editingId);
                 if (transactionIndex > -1) {
+                    // AJUSTE: Asegurar que se guarde la categoría/tipo de registro
                     transactionHistory[transactionIndex] = {
                         ...transactionHistory[transactionIndex],
                         amount: pendingTransaction.amount,
                         client: pendingTransaction.client || "Ingreso Genérico",
-                        date: pendingTransaction.date
+                        date: pendingTransaction.date,
+                        category: pendingTransaction.category // Nueva propiedad
                     };
                 }
                 ingresoButton.textContent = 'Registrar';
                 editingId = null;
             } else {
-                const { amount, client, date } = pendingTransaction;
-                transactionHistory.push({ id: nextId++, type: "ingreso", amount: amount, client: client || "Ingreso Genérico", date: date || new Date().toISOString().split('T')[0] });
+                const { amount, client, date, category } = pendingTransaction; // AJUSTE: Recibir la categoría
+                // AJUSTE: Guardar la categoría en el historial
+                transactionHistory.push({ id: nextId++, type: "ingreso", amount: amount, client: client || "Ingreso Genérico", date: date || new Date().toISOString().split('T')[0], category: category }); 
             }
             document.getElementById('ingreso-monto').value = '';
             document.getElementById('ingreso-cliente').value = '';
             document.getElementById('ingreso-fecha').value = '';
+            // AJUSTE: Resetear los selectores de ingreso
+            ingresoTipoRegistroSelect.value = 'distribuir';
+            ingresoCategoriaSelect.classList.add('hidden');
+            ingresoCategoriaSelect.value = '';
+
         } else if (pendingTransaction.type === 'gasto') {
             if (editingId !== null) {
                 const transactionIndex = transactionHistory.findIndex(t => t.id === editingId);
@@ -798,7 +854,7 @@
                         ...transactionHistory[transactionIndex],
                         amount: pendingTransaction.amount,
                         category: pendingTransaction.category,
-                        description: pendingTransaction.description || `Gasto en ${pendingTransaction.category}`,
+                        description: pendingTransaction.description || `Gasto en ${categoryDisplayNames[pendingTransaction.category]}`, // AJUSTE: Usa el nombre visible
                         evidence: pendingEvidence
                     };
                 }
@@ -807,7 +863,7 @@
             } else {
                 const { amount, category, description, evidence } = pendingTransaction;
                 if (balances[category] >= amount || pendingTransaction.isConfirmed) {
-                    transactionHistory.push({ id: nextId++, type: "gasto", amount: amount, category: category, description: description || `Gasto en ${category}`, date: new Date().toISOString().split('T')[0], evidence: evidence });
+                    transactionHistory.push({ id: nextId++, type: "gasto", amount: amount, category: category, description: description || `Gasto en ${categoryDisplayNames[category]}`, date: new Date().toISOString().split('T')[0], evidence: evidence }); // AJUSTE: Usa el nombre visible
                 }
             }
             document.getElementById('gasto-monto').value = '';
@@ -841,6 +897,9 @@
                     imageViewerDialog.classList.add('hidden');
                 }
             });
+            
+            // AJUSTE: Recalcular balances al inicio para aplicar la lógica si la data inicial es modificada
+            reCalculateBalances();
 
             // Initial view
             showTab('login');
